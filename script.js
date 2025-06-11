@@ -65,13 +65,50 @@ const songs = [
   // 2️⃣ Fan Favorite Showdown
   document.getElementById("fanFavorite").innerHTML = `
     <h3>Fan Favorite Showdown</h3>
+    <ul id="fanFavoriteList"></ul>
     <button id="vote">Vote</button>
     <div id="voteCount">Votes: 0</div>
   `;
   
-  document.getElementById("vote").addEventListener("click", () => {
-    // Add your code here
-  });
+  // Fan Favorite Showdown logic
+  const fanFavoriteList = document.getElementById('fanFavoriteList');
+  const fanVoteBtn = document.getElementById('vote');
+  const fanVoteResult = document.getElementById('voteCount');
+  let selectedSongIndex = null;
+  let voteCounts = Array(songs.length).fill(0);
+  let totalVotes = 0;
+
+  function updateFanFavoriteList() {
+    fanFavoriteList.innerHTML = '';
+    songs.forEach((song, idx) => {
+      const percent = totalVotes > 0 ? ((voteCounts[idx] / totalVotes) * 100).toFixed(1) : '0.0';
+      const li = document.createElement('li');
+      li.textContent = `${song} (${percent}%)`;
+      li.classList.add('fan-fav-song');
+      li.addEventListener('click', () => {
+        Array.from(fanFavoriteList.children).forEach(child => child.classList.remove('selected'));
+        li.classList.add('selected');
+        selectedSongIndex = idx;
+        fanVoteBtn.disabled = false;
+      });
+      fanFavoriteList.appendChild(li);
+    });
+  }
+
+  if (fanFavoriteList && fanVoteBtn && fanVoteResult) {
+    updateFanFavoriteList();
+
+    fanVoteBtn.addEventListener('click', () => {
+      if (selectedSongIndex !== null) {
+        voteCounts[selectedSongIndex]++;
+        totalVotes++;
+        fanVoteResult.textContent = `Votes for "${songs[selectedSongIndex]}": ${voteCounts[selectedSongIndex]}`;
+        fanVoteBtn.disabled = true;
+        selectedSongIndex = null;
+        updateFanFavoriteList();
+      }
+    });
+  }
   
   // 3️⃣ Tour Date Spotlight
   document.getElementById("tourHighlight").innerHTML = `
@@ -122,4 +159,4 @@ const songs = [
 
   document.getElementById("toggleBio").addEventListener("click", () => {
     // Add your code here
-  });  
+  });
